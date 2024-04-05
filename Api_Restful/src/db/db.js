@@ -10,4 +10,3 @@ export const db=createPool({
     connectTimeout: 3000000, 
 })
 
-// export default db;

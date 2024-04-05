@@ -1,11 +1,10 @@
 import { db } from "../db/db.js";
-//  lista
-
+//lista
 
 // enlista doros
 export const Get = async (req, res) => {
-  const rows = await db.query(`
-    SELECT * FROM exotic_bar.permisos;
+  const [rows] = await db.query(`
+    SELECT * FROM pagos_empleado
     `);
   if (rows.length <= 0) {
     res.status(404).json({ error: `Error 404 no se econtro registros` });
@@ -16,13 +15,12 @@ export const Get = async (req, res) => {
 
 // elista por id
 export const GetId = async (req, res) => {
+  const { id } = req.params;
   const [rows] = await db.query(
-    `
-    SELECT * FROM exotic_bar.permisos
-    where ID= ? `,
-    [req.params.id]
+    ` SELECT * FROM pagos_empleado
+    WHERE ID=?`,
+    [id]
   );
-
   if (rows.length <= 0) {
     res.status(404).json({ error: `Error 404 no se econtro registros` });
   } else {
@@ -32,14 +30,13 @@ export const GetId = async (req, res) => {
 
 // elista por rango
 export const GetIdRango = async (req, res) => {
+  const { id, idDos } = req.params;
   const [rows] = await db.query(
     `
-    SELECT * FROM exotic_bar.permisos
-    WHERE ID BETWEEN ? AND ?;
-    `,
-    [req.params.id, req.params.idDos]
+    SELECT * FROM pagos_empleado
+    WHERE ID BETWEEN ? AND ?;`,
+    [id, idDos]
   );
-
   if (rows.length <= 0) {
     res.status(404).json({ error: `Error 404 no se econtro registros` });
   } else {
@@ -49,73 +46,73 @@ export const GetIdRango = async (req, res) => {
 
 // crear registro
 export const Post = async (req, res) => {
-  const { Nombre, Descripcion } = req.body;
+  const { ID_Usuario, id_Rol,  Dia_trabajados } = req.body;
   const [rows] = await db.query(
-    "INSERT INTO permisos (Nombre,Descripcion) VALUES  (?,?)",
-    [Nombre, Descripcion]
+    ` INSERT INTO pagos_empleado  (  ID_Usuario, id_Rol, Dia_trabajados ) VALUES (?,?,?)`,
+    [ID_Usuario, id_Rol, Dia_trabajados]
   );
 
   res.json({
     ID: rows.insertId,
-    Nombre,
-    Descripcion,
+    ID_Usuario,
+    id_Rol,
+    Dia_trabajados,
   });
 };
 
 // edita un registro
 export const Patch = async (req, res) => {
   const { id } = req.params;
-  const { Nombre, Descripcion } = req.body;
-  console.log(id, Nombre, Descripcion);
-
+  const { ID_Usuario, id_Rol, Dia_trabajados } = req.body;
   const [resul] = await db.query(
     `
-    update permisos  set Nombre=IFNULL(?,Nombre) , Descripcion=IFNULL(?,Descripcion) 
+    update pagos_empleado set   ID_Usuario=IFNULL(?,ID_Usuario), id_Rol=IFNULL(?,id_Rol), Dia_trabajados=IFNULL(?,Dia_trabajados)
     where ID=?`,
-    [Nombre, Descripcion, id]
+    [ ID_Usuario, id_Rol, Dia_trabajados, id]
   );
 
+  if (resul.affectedRows <= 0) {
+    return res.status(404).json({ result: "error 505 no se econtro" });
+  }
 
   const [rows] = await db.query(
     `
-      SELECT * FROM exotic_bar.permisos
-      where ID= ? `,
+  SELECT * FROM pagos_empleado
+  where ID=?`,
     [id]
   );
 
   res.json(rows[0]);
 };
+
 // elimina un registro
 export const Delete = async (req, res) => {
+  const { id } = req.params;
   const [rows] = await db.query(
     `
-    DELETE FROM exotic_bar.permisos
-    where ID= ? `,
-    [req.params.id]
+  DELETE FROM pagos_empleado
+  where ID=? `,
+    [id]
   );
 
   if (rows.affectedRows <= 0) {
-     res.status(404).json({ result: "error 505 no se econtro" });
+    res.status(404).json({ result: "error 505 no se econtro" });
   }
   res.sendStatus(204);
 };
 
-
 // elimina por rango
 export const DeleteRango = async (req, res) => {
   const { id, idDos } = req.params;
-
   const [rows] = await db.query(
     `
-    DELETE FROM exotic_bar.permisos
+    DELETE FROM pagos_empleado
     WHERE ID BETWEEN ? AND ? `,
     [id, idDos]
   );
 
   if (rows.affectedRows <= 0) {
-     res.status(404).json({ result: "error 505 no se econtro" });
+    res.status(404).json({ result: "error 505 no se econtro" });
   }
   res.sendStatus(204);
 };
-
-// WHERE ID BETWEEN ? AND ?;

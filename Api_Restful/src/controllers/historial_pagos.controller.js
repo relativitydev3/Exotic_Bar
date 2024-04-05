@@ -4,7 +4,7 @@ import { db } from "../db/db.js";
 // enlista doros
 export const Get = async (req, res) => {
   const [rows] = await db.query(`
-    SELECT * FROM usuarios
+    SELECT * FROM historial_pagos
     `);
   if (rows.length <= 0) {
     res.status(404).json({ error: `Error 404 no se econtro registros` });
@@ -17,7 +17,7 @@ export const Get = async (req, res) => {
 export const GetId = async (req, res) => {
   const { id } = req.params;
   const [rows] = await db.query(
-    ` SELECT * FROM usuarios
+    ` SELECT * FROM historial_pagos
     WHERE ID=?`,
     [id]
   );
@@ -33,7 +33,7 @@ export const GetIdRango = async (req, res) => {
   const { id, idDos } = req.params;
   const [rows] = await db.query(
     `
-    SELECT * FROM usuarios
+    SELECT * FROM historial_pagos
     WHERE ID BETWEEN ? AND ?;`,
     [id, idDos]
   );
@@ -46,31 +46,71 @@ export const GetIdRango = async (req, res) => {
 
 // crear registro
 export const Post = async (req, res) => {
-  const { Nombre_Conpreto, Nombre_Usuario, CONTRASEÑA, IMG, id_Rol } = req.body;
+  const {
+    ID_Pagos,
+    Novedades,
+    Firma_Trabajador,
+    Fecha_pago,
+    Dia_trabajados,
+    Salario_Diario,
+    Salario_Total,
+    Total_Pagado,
+  } = req.body;
   const [rows] = await db.query(
-    ` INSERT INTO usuarios  (Nombre_Conpreto,Nombre_Usuario,CONTRASEÑA,IMG,id_Rol) VALUES (?,?,?,?,?)`,
-    [Nombre_Conpreto, Nombre_Usuario, CONTRASEÑA, IMG, id_Rol]
+    ` INSERT INTO historial_pagos  ( ID_Pagos, Novedades, Firma_Trabajador,Fecha_pago,Dia_trabajados, Salario_Diario, Salario_Total,Total_Pagado ) VALUES (?,?,?,?,?,?,?,?)`,
+    [
+      ID_Pagos,
+      Novedades,
+      Firma_Trabajador,
+      Fecha_pago,
+      Dia_trabajados,
+      Salario_Diario,
+      Salario_Total,
+      Total_Pagado,
+    ]
   );
 
   res.json({
     ID: rows.insertId,
-    Nombre_Conpreto,
-    Nombre_Usuario,
-    CONTRASEÑA,
-    IMG,
-    id_Rol,
+    ID_Pagos,
+    Novedades,
+    Firma_Trabajador,
+    Fecha_pago,
+    Dia_trabajados,
+    Salario_Diario,
+    Salario_Total,
+    Total_Pagado,
   });
 };
 
 // edita un registro
-export const  Patch= async (req, res) => {
+export const Patch = async (req, res) => {
   const { id } = req.params;
-  const { Nombre_Conpreto, Nombre_Usuario, CONTRASEÑA, IMG, id_Rol } = req.body;
+  const {
+    ID_Pagos,
+    Novedades,
+    Firma_Trabajador,
+    Fecha_pago,
+    Dia_trabajados,
+    Salario_Diario,
+    Salario_Total,
+    Total_Pagado,
+  } = req.body;
   const [resul] = await db.query(
     `
-    update usuarios set Nombre_Conpreto=IFNULL(?,Nombre_Conpreto) , Nombre_Usuario=IFNULL(?,Nombre_Usuario),CONTRASEÑA=IFNULL(?,CONTRASEÑA),IMG=IFNULL(?,IMG), id_Rol=IFNULL(?,id_Rol)
+    update historial_pagos set  ID_Pagos=IFNULL(?,ID_Pagos), Novedades=IFNULL(?,Novedades), Firma_Trabajador=IFNULL(?,Firma_Trabajador),Fecha_pago=IFNULL(?,Fecha_pago),Dia_trabajados=IFNULL(?,Dia_trabajados), Salario_Diario=IFNULL(?,Salario_Diario), Salario_Total=IFNULL(?,Salario_Total),Total_Pagado=IFNULL(?,Total_Pagado)
     where ID=?`,
-    [Nombre_Conpreto, Nombre_Usuario, CONTRASEÑA, IMG, id_Rol, id]
+    [
+      ID_Pagos,
+    Novedades,
+    Firma_Trabajador,
+    Fecha_pago,
+    Dia_trabajados,
+    Salario_Diario,
+    Salario_Total,
+    Total_Pagado,
+      id,
+    ]
   );
 
   if (resul.affectedRows <= 0) {
@@ -79,7 +119,7 @@ export const  Patch= async (req, res) => {
 
   const [rows] = await db.query(
     `
-  SELECT * FROM usuarios
+  SELECT * FROM historial_pagos
   where ID=?`,
     [id]
   );
@@ -92,29 +132,29 @@ export const Delete = async (req, res) => {
   const { id } = req.params;
   const [rows] = await db.query(
     `
-  DELETE FROM usuarios
+  DELETE FROM historial_pagos
   where ID=? `,
     [id]
   );
 
   if (rows.affectedRows <= 0) {
-     res.status(404).json({ result: "error 505 no se econtro" });
+    res.status(404).json({ result: "error 505 no se econtro" });
   }
   res.sendStatus(204);
 };
 
 // elimina por rango
-export const  DeleteRango= async (req, res) => {
-  const {id,idDos}=req.params;
+export const DeleteRango = async (req, res) => {
+  const { id, idDos } = req.params;
   const [rows] = await db.query(
     `
-    DELETE FROM usuarios
+    DELETE FROM historial_pagos
     WHERE ID BETWEEN ? AND ? `,
     [id, idDos]
   );
 
   if (rows.affectedRows <= 0) {
-     res.status(404).json({ result: "error 505 no se econtro" });
+    res.status(404).json({ result: "error 505 no se econtro" });
   }
   res.sendStatus(204);
 };

@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { GetUsuarios,GetUsuariosID,GetUsuariosIDRango,PostCreate } from "../controllers/usuario.controller.js";
+import {Get,GetId,GetIdRango,Post,Patch,Delete,DeleteRango } from "../controllers/usuario.controller.js";
 const router=Router();
 
 
-router.get("/usuario",GetUsuarios );
-router.get("/usuario/:id",GetUsuariosID );
-router.get("/usuario/:id/:idDos",GetUsuariosIDRango );
-router.post("/usuario",PostCreate );
-router.delete("/usuario/:id", );
-router.delete("/usuario/:id/:iddos", );
-router.patch("/usuario/:id", );
+router.get("/usuario",Get );
+router.get("/usuario/:id",GetId );
+router.get("/usuario/:id/:idDos",GetIdRango );
+router.post("/usuario",Post );
+router.patch("/usuario/:id", Patch);
+router.delete("/usuario/:id",Delete );
+router.delete("/usuario/:id/:idDos",DeleteRango );
 
 export default router;
