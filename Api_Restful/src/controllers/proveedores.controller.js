@@ -1,114 +1,155 @@
 import { db } from "../db/db.js";
 //lista
 
-
 // enlista toros
 export const Get = async (req, res) => {
-  const rows = await db.query(`
-    SELECT * FROM exotic_bar.provedores;`);
-  if (rows.length <= 0) {
-    res.status(404).json({ error: `Error 404 no se econtro registros` });
-  } else {
-    res.json(rows[0]);
+  try {
+    const rows = await db.query(`
+  SELECT * FROM exotic_bar.provedores;`);
+    if (rows.length <= 0) {
+      res.status(404).json({ error: `Error 404 no se econtro registros` });
+    } else {
+      res.json(rows[0]);
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: "Error",
+    });
   }
 };
 
 // elista por id
 export const GetId = async (req, res) => {
-  const { id } = req.params;
-  const [rows] = await db.query(
-    `
+  try {
+    const { id } = req.params;
+    const [rows] = await db.query(
+      `
     SELECT * FROM exotic_bar.provedores
     where ID=?`,
-    [id]
-  );
-  if (rows.length <= 0) {
-    res.status(404).json({ message: "Error 404 - Proveedor no encontrado" });
-  } else {
-    res.json(rows[0]);
+      [id]
+    );
+    if (rows.length <= 0) {
+      res.status(404).json({ message: "Error 404 - Proveedor no encontrado" });
+    } else {
+      res.json(rows[0]);
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: "Error",
+    });
   }
 };
 
 // elista por rango
 export const GetIdRango = async (req, res) => {
-  const { id, idDos } = req.params;
-  const [rows] = await db.query(
-    `SELECT * FROM exotic_bar.provedores
+  try {
+    const { id, idDos } = req.params;
+    const [rows] = await db.query(
+      `SELECT * FROM exotic_bar.provedores
         WHERE ID BETWEEN ? AND ?`,
-    [id, idDos]
-  );
-  if (rows.length <= 0) {
-    res.status(404).json({
-      message: `Error 404 - Proveedor no encontrado ${id} -  ${idDos}`,
+      [id, idDos]
+    );
+    if (rows.length <= 0) {
+      res.status(404).json({
+        message: `Error 404 - Proveedor no encontrado ${id} -  ${idDos}`,
+      });
+    } else {
+      res.json(rows);
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: "Error",
     });
-  } else {
-    res.json(rows);
   }
 };
 
 // crear registro
 export const Post = async (req, res) => {
-  const { Nombre, Descripcion, Direcion, Dato_Contancto, Precio } = req.body;
-  const [rows] = await db.query(
-    ` INSERT INTO provedores (Nombre, Descripcion, Direcion, Dato_Contancto, Precio) VALUES (?,?,?,?,?)`,
-    [Nombre, Descripcion, Direcion, Dato_Contancto, Precio]
-  );
+  try {
+    const { Nombre, Descripcion, Direcion, Dato_Contancto, Precio } = req.body;
+    const [rows] = await db.query(
+      ` INSERT INTO provedores (Nombre, Descripcion, Direcion, Dato_Contancto, Precio) VALUES (?,?,?,?,?)`,
+      [Nombre, Descripcion, Direcion, Dato_Contancto, Precio]
+    );
 
-  res.json({
-    ID: rows.insertId,
-    Nombre,
-    Descripcion,
-    Direcion,
-    Dato_Contancto,
-    Precio,
-  });
+    res.json({
+      ID: rows.insertId,
+      Nombre,
+      Descripcion,
+      Direcion,
+      Dato_Contancto,
+      Precio,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error",
+    });
+  }
 };
 
 // edita un registro
 export const Patch = async (req, res) => {
-  const { Nombre, Descripcion, Direcion, Dato_Contancto, Precio } = req.body;
-  const { id } = req.params;
-  const [resul] = await db.query(
-    `
+  try {
+    const { Nombre, Descripcion, Direcion, Dato_Contancto, Precio } = req.body;
+    const { id } = req.params;
+    const [resul] = await db.query(
+      `
   UPDATE provedores SET Nombre=IFNULL(?,Nombre), Descripcion=IFNULL(?,Descripcion), Direcion=IFNULL(?,Direcion), Dato_Contancto=IFNULL(?,Dato_Contancto), Precio=IFNULL(?,Precio)
   WHERE ID=?`,
-    [Nombre, Descripcion, Direcion, Dato_Contancto, Precio, id]
-  );
+      [Nombre, Descripcion, Direcion, Dato_Contancto, Precio, id]
+    );
 
-  const [rows] = await db.query(
-    `
+    const [rows] = await db.query(
+      `
     SELECT * FROM provedores
     WHERE ID=?`,
-    [id]
-  );
+      [id]
+    );
 
-  res.json(rows[0]);
+    res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error",
+    });
+  }
 };
 // elimina un registro
 export const Delete = async (req, res) => {
-  const { id } = req.params;
-  const [rows] = await db.query(
-    `
+  try {
+    const { id } = req.params;
+    const [rows] = await db.query(
+      `
   DELETE FROM provedores
   WHERE ID=?`,
-    [id]
-  );
-  if (rows.affectedRows <= 0) {
-     res.status(404).json({ result: "error 505 no se econtro" });
+      [id]
+    );
+    if (rows.affectedRows <= 0) {
+      res.status(404).json({ result: "error 505 no se econtro" });
+    }
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error",
+    });
   }
-  res.sendStatus(204);
 };
 // elista por rango
 export const DeleteRango = async (req, res) => {
-  const { id, idDos } = req.params;
-  const [rows] = await db.query(
-    `
+  try {
+    const { id, idDos } = req.params;
+    const [rows] = await db.query(
+      `
   DELETE FROM provedores
   WHERE ID BETWEEN ? AND ? `,
-    [id, idDos]
-  );
-  if (rows.affectedRows <= 0) {
-     res.status(404).json({ result: "error 505 no se econtro" });
+      [id, idDos]
+    );
+    if (rows.affectedRows <= 0) {
+      res.status(404).json({ result: "error 505 no se econtro" });
+    }
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error",
+    });
   }
-  res.sendStatus(204);
 };
