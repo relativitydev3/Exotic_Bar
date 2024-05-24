@@ -1,0 +1,202 @@
+
+drop database exotic_bar;
+create database exotic_bar;
+
+use exotic_bar;
+
+# crea permisos
+CREATE TABLE permisos (
+  ID char(36) NOT NULL ,
+  Nombre VARCHAR(255) NOT NULL,
+  Descripcion VARCHAR(500) NOT NULL,
+  
+  PRIMARY KEY (ID)
+);
+
+
+# crea roles
+CREATE TABLE roles (
+  ID char(36) NOT NULL,
+  Nombre VARCHAR(255) NOT NULL,
+  Descripcion VARCHAR(500) NOT NULL,
+  
+  
+  PRIMARY KEY (ID)
+);
+
+
+
+
+# normalisa roles y permisos ya que era una relacion de N:M
+CREATE TABLE intermedia_roles_permisos (
+  ID  char(36) NOT NULL ,
+  id_Permiso  char(36) NOT NULL,
+  id_Rol  char(36) NOT NULL,
+
+  PRIMARY KEY (ID),
+  FOREIGN KEY (id_Permiso) REFERENCES permisos (ID),
+  FOREIGN KEY (id_Rol) REFERENCES roles (ID)
+);
+
+
+
+CREATE TABLE usuarios (
+  ID  char(36) NOT NULL ,
+  Nombre_Conpreto VARCHAR(255) NOT NULL,
+  Nombre_Usuario VARCHAR(255) NOT NULL UNIQUE,
+  CONTRASEÑA VARCHAR(500) NOT NULL,
+  IMG VARCHAR(255) NULL,
+  id_Rol  char(36) NOT NULL,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (id_Rol) REFERENCES roles (ID)
+);
+
+
+
+# amasena a los trabagadores que se le deben pagar.
+CREATE TABLE pagos_empleado (
+  ID  char(36) NOT NULL ,
+  ID_Usuario  char(36) NOT NULL,
+  id_Rol  char(36) NOT NULL,
+  Dia_trabajados int NOT NULL,
+  
+  
+  PRIMARY KEY (ID),
+  FOREIGN KEY (ID_Usuario) REFERENCES usuarios (ID)
+);
+
+CREATE TABLE historial_pagos (
+  ID  char(36) NOT NULL ,
+  ID_Pagos  char(36) NOT NULL,
+  Novedades  VARCHAR(500) NOT NULL,
+  Firma_Trabajador  VARCHAR(500) NULL,
+  Fecha_pago datetime NOT NULL,
+  Dia_trabajados int NOT NULL,
+  Salario_Diario int NOT NULL,
+  Salario_Total int NOT NULL,
+  Total_Pagado int NOT NULL,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (ID_Pagos) REFERENCES Pagos_empleado (ID)
+);
+
+
+CREATE TABLE categoria (
+  ID  char(36) NOT NULL ,
+  Nombre VARCHAR(255) NOT NULL,
+  Descripcion VARCHAR(500) NULL,
+  PRIMARY KEY (ID)
+);
+
+
+
+CREATE TABLE estados (
+  ID  char(36) NOT NULL ,
+  Nombre VARCHAR(255) NOT NULL,  
+  Descripcion VARCHAR(500) NULL,
+  PRIMARY KEY (ID)
+);
+
+
+
+
+CREATE TABLE productos (
+  ID  char(36) NOT NULL ,
+  ID_Paga  char(36) NOT NULL,
+  Nombre VARCHAR(255) NOT NULL,
+  Descripcion VARCHAR(500) NULL,
+  ID_Estado  char(36) NOT NULL,
+  ID_Categoria  char(36) NOT NULL,
+  PRIMARY KEY (ID),
+  FOREIGN KEY (ID_Estado) REFERENCES estados (ID),
+  FOREIGN KEY (ID_Categoria) REFERENCES categoria (ID)
+);
+
+
+
+
+
+CREATE TABLE provedores  (
+  ID  char(36) NOT NULL ,
+  Nombre VARCHAR(255) NOT NULL,
+  Descripcion VARCHAR(500) NULL,
+  Direcion VARCHAR(500) NULL,
+  Dato_Contancto VARCHAR(500) NULL,
+  Precio int NOT NULL,
+  
+  PRIMARY KEY (ID)
+);
+
+
+CREATE TABLE Insumos  (
+  ID  char(36) NOT NULL ,
+  Nombre VARCHAR(255) NOT NULL,
+  Descripcion VARCHAR(500) NULL,
+  IMG VARCHAR(500) NULL,
+  Unidades int NOT NULL,
+  Precio_Unitario int NOT NULL,
+  Precio_total int NOT NULL,
+
+  PRIMARY KEY (ID)
+);
+
+CREATE TABLE Mesas  (
+  ID  char(36) NOT NULL ,
+  Numero_Mesa int NOT NULL,
+  Descripcion VARCHAR(255)  NULL,
+	
+  PRIMARY KEY (ID)
+);
+
+
+
+
+
+
+
+CREATE TABLE pedidos (
+  ID  char(36) NOT NULL ,
+  ID_usuarios  char(36) NOT NULL,
+  ID_Mesa  char(36) NOT NULL,
+  Nombre VARCHAR(255) NOT NULL,
+  Descripcion VARCHAR(500) NULL,
+  Fecha datetime NOT NULL,  
+  Total int NOT NULL,
+  
+  PRIMARY KEY (ID),
+  FOREIGN KEY (ID_usuarios) REFERENCES usuarios (ID),
+  FOREIGN KEY (ID_Mesa) REFERENCES Mesas (ID)
+);
+
+
+
+
+
+
+CREATE TABLE pedidos_historial (
+  ID  char(36) NOT NULL ,
+  ID_Pedido  char(36) NOT NULL,
+  ID_Productos  char(36) NOT NULL,
+  Cantidad int NOT NULL,
+  Precio_Producto int NOT NULL,
+  Descripcion VARCHAR(500) NULL,
+  
+  PRIMARY KEY (ID),
+  FOREIGN KEY (ID_Pedido) REFERENCES pedidos (ID),
+  FOREIGN KEY (ID_Productos) REFERENCES productos (ID)
+);
+    
+
+
+
+CREATE TABLE  intermedia_pedido_Producto (
+  ID  char(36) NOT NULL ,
+  ID_Pedido  char(36) NOT NULL,
+  ID_Productos  char(36) NOT NULL,
+  
+  
+  PRIMARY KEY (ID),
+  FOREIGN KEY (ID_Pedido) REFERENCES pedidos (ID),
+  FOREIGN KEY (ID_Productos) REFERENCES productos (ID)
+);
+
+

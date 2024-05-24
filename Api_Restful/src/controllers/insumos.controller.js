@@ -1,4 +1,6 @@
 import { db } from "../db/db.js";
+import { v4 as uuidv4 } from 'uuid';
+
 
 //lista
 
@@ -73,8 +75,8 @@ export const Post = async (req, res) => {
     } = req.body;
     const [rows] = await db.query(
       `
-    INSERT INTO insumos  (Nombre, Descripcion , IMG, Unidades, Precio_Unitario,Precio_total) VALUES (?,?,?,?,?,?)`,
-      [Nombre, Descripcion, IMG, Unidades, Precio_Unitario, Precio_total]
+    INSERT INTO insumos  (ID,Nombre, Descripcion , IMG, Unidades, Precio_Unitario,Precio_total) VALUES (?,?,?,?,?,?,?)`,
+      [uuidv4(),Nombre, Descripcion, IMG, Unidades, Precio_Unitario, Precio_total]
     );
 
     res.json({
@@ -144,28 +146,6 @@ export const Delete = async (req, res) => {
 
     if (rows.affectedRows <= 0) {
       return res.status(404).json({ result: "error 505 no se econtro" });
-    }
-    res.sendStatus(204);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error",
-    });
-  }
-};
-// elista por rango
-export const DeleteRango = async (req, res) => {
-  try {
-    const { id, idDos } = req.params;
-
-    const [rows] = await db.query(
-      `
-      DELETE FROM insumos
-      WHERE ID BETWEEN ? AND ? `,
-      [id, idDos]
-    );
-
-    if (rows.affectedRows <= 0) {
-      res.status(404).json({ result: "error 505 no se econtro" });
     }
     res.sendStatus(204);
   } catch (error) {

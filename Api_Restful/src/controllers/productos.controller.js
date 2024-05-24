@@ -1,4 +1,6 @@
 import { db } from "../db/db.js";
+import { v4 as uuidv4 } from 'uuid';
+
 //lista
 
 // enlista doros
@@ -67,8 +69,8 @@ export const Post = async (req, res) => {
   try {
     const { ID_Paga, Nombre, Descripcion, ID_Estado, ID_Categoria } = req.body;
     const [rows] = await db.query(
-      ` INSERT INTO productos  ( ID_Paga,Nombre,Descripcion,ID_Estado,ID_Categoria) VALUES (?,?,?,?,?)`,
-      [ID_Paga, Nombre, Descripcion, ID_Estado, ID_Categoria]
+      ` INSERT INTO productos  (ID, ID_Paga,Nombre,Descripcion,ID_Estado,ID_Categoria) VALUES (?,?,?,?,?,?)`,
+      [uuidv4(),ID_Paga, Nombre, Descripcion, ID_Estado, ID_Categoria]
     );
 
     res.json({
@@ -139,24 +141,3 @@ export const Delete = async (req, res) => {
   }
 };
 
-// elimina por rango
-export const DeleteRango = async (req, res) => {
-  try {
-    const { id, idDos } = req.params;
-    const [rows] = await db.query(
-      `
-    DELETE FROM productos
-    WHERE ID BETWEEN ? AND ? `,
-      [id, idDos]
-    );
-
-    if (rows.affectedRows <= 0) {
-      res.status(404).json({ result: "error 505 no se econtro" });
-    }
-    res.sendStatus(204);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error",
-    });
-  }
-};

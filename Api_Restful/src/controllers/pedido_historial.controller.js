@@ -1,4 +1,6 @@
 import { db } from "../db/db.js";
+import { v4 as uuidv4 } from 'uuid';
+
 //lista
 
 // enlista doros
@@ -68,8 +70,8 @@ export const Post = async (req, res) => {
     const { ID_Pedido, ID_Productos, Cantidad, Precio_Producto, Descripcion } =
       req.body;
     const [rows] = await db.query(
-      ` INSERT INTO pedidos_historial  ( ID_Pedido, ID_Productos, Cantidad, Precio_Producto, Descripcion ) VALUES (?,?,?,?,?)`,
-      [ID_Pedido, ID_Productos, Cantidad, Precio_Producto, Descripcion]
+      ` INSERT INTO pedidos_historial  (ID, ID_Pedido, ID_Productos, Cantidad, Precio_Producto, Descripcion ) VALUES (?,?,?,?,?,?)`,
+      [uuidv4(),ID_Pedido, ID_Productos, Cantidad, Precio_Producto, Descripcion]
     );
 
     res.json({
@@ -128,28 +130,6 @@ export const Delete = async (req, res) => {
   DELETE FROM pedidos_historial
   where ID=? `,
       [id]
-    );
-
-    if (rows.affectedRows <= 0) {
-      res.status(404).json({ result: "error 505 no se econtro" });
-    }
-    res.sendStatus(204);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error",
-    });
-  }
-};
-
-// elimina por rango
-export const DeleteRango = async (req, res) => {
-  try {
-    const { id, idDos } = req.params;
-    const [rows] = await db.query(
-      `
-    DELETE FROM pedidos_historial
-    WHERE ID BETWEEN ? AND ? `,
-      [id, idDos]
     );
 
     if (rows.affectedRows <= 0) {

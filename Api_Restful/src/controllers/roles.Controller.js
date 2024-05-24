@@ -1,4 +1,5 @@
 import { db } from "../db/db.js";
+import { v4 as uuidv4 } from 'uuid';
 //lista
 
 // trae todos lod roles
@@ -14,7 +15,7 @@ export const Get = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({
-      error: "Error",
+      error: "error",
     });
   }
 };
@@ -68,8 +69,8 @@ export const Post = async (req, res) => {
     const { Nombre, Descripcion } = req.body;
     const [rows] = await db.query(
       `
-    INSERT INTO roles (Nombre,Descripcion) VALUES (?,?) `,
-      [Nombre, Descripcion]
+    INSERT INTO roles (ID,Nombre,Descripcion) VALUES (?,?,?) `,
+      [uuidv4(),Nombre, Descripcion]
     );
     res.json({
       ID: rows.insertId,
@@ -131,24 +132,3 @@ export const Delete = async (req, res) => {
   }
 };
 
-// elimina un registro por rango
-export const DeleteRango = async (req, res) => {
-  try {
-    const { id, idDos } = req.params;
-    const [rows] = await db.query(
-      `
-    DELETE FROM roles 
-    WHERE ID BETWEEN ? AND ? `,
-      [id, idDos]
-    );
-
-    if (rows.affectedRows <= 0) {
-      res.status(505).json({ resul: "No se econtro ese registro." });
-    }
-    res.sendStatus(204);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error",
-    });
-  }
-};

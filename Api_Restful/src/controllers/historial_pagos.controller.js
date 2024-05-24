@@ -1,4 +1,6 @@
 import { db } from "../db/db.js";
+import { v4 as uuidv4 } from 'uuid';
+
 //lista
 
 // enlista doros
@@ -76,8 +78,9 @@ export const Post = async (req, res) => {
       Total_Pagado,
     } = req.body;
     const [rows] = await db.query(
-      ` INSERT INTO historial_pagos  ( ID_Pagos, Novedades, Firma_Trabajador,Fecha_pago,Dia_trabajados, Salario_Diario, Salario_Total,Total_Pagado ) VALUES (?,?,?,?,?,?,?,?)`,
+      ` INSERT INTO historial_pagos  (ID, ID_Pagos, Novedades, Firma_Trabajador,Fecha_pago,Dia_trabajados, Salario_Diario, Salario_Total,Total_Pagado ) VALUES (?,?,?,?,?,?,?,?,?)`,
       [
+        uuidv4(),
         ID_Pagos,
         Novedades,
         Firma_Trabajador,
@@ -179,24 +182,3 @@ export const Delete = async (req, res) => {
   }
 };
 
-// elimina por rango
-export const DeleteRango = async (req, res) => {
-  try {
-    const { id, idDos } = req.params;
-    const [rows] = await db.query(
-      `
-    DELETE FROM historial_pagos
-    WHERE ID BETWEEN ? AND ? `,
-      [id, idDos]
-    );
-
-    if (rows.affectedRows <= 0) {
-      res.status(404).json({ result: "error 505 no se econtro" });
-    }
-    res.sendStatus(204);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error",
-    });
-  }
-};
